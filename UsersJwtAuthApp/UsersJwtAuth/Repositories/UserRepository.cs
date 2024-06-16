@@ -17,15 +17,20 @@ public class UserRepository : IUserRepository
         return await _context.Users.ToListAsync();
     }
 
+    public async Task<User> GetById(int id)
+    {
+        return await _context.Users.FindAsync(id);
+    }
+
+    public async Task<User> GetByUsername(string username)
+    {
+        return await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+    }
+
     public async Task Add(User user)
     {
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-    }
-
-    public async Task<User> GetById(int id)
-    {
-        return await _context.Users.FindAsync(id);
     }
 
     public async Task Update(User user)
