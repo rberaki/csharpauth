@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using UsersJwtAuth.Constants;
 
 namespace UsersJwtAuth.StartupDependency;
 
@@ -21,18 +22,18 @@ public static class DiExtensions
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = config.GetValue<string>("Auth:Issuer"),
-                ValidAudience = config.GetValue<string>("Auth:Audience"),
+                ValidIssuer = config.GetValue<string>(ConfigConstants.Issuer),
+                ValidAudience = config.GetValue<string>(ConfigConstants.Audience),
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(config.GetValue<string>("Auth:SecretKey")))
+                        Encoding.UTF8.GetBytes(config.GetValue<string>(ConfigConstants.SecretKey)))
             };
         });
     }
 
     public static void AddSwaggerServices(this IServiceCollection services)
     {
-        var securityScheme = new OpenApiSecurityScheme()
+        var securityScheme = new OpenApiSecurityScheme
         {
             Name = "Authorization",
             Description = "JWT Authorization using bearer token",

@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using UsersJwtAuth.Constants;
 using UsersJwtAuth.Models;
 using UsersJwtAuth.Repositories;
 
@@ -96,8 +97,8 @@ public static class UserEndpoints
 
     private static string CreateAccessToken(User user, IConfiguration config)
     {
-        var securityKey = Encoding.UTF8.GetBytes(config.GetValue<string>("Auth:SecretKey")!);
-        var credentials = new SigningCredentials(new SymmetricSecurityKey(securityKey), SecurityAlgorithms.HmacSha256);
+        var securityKey = Encoding.UTF8.GetBytes(config.GetValue<string>(ConfigConstants.SecretKey)!);
+        var credentials = new SigningCredentials(new SymmetricSecurityKey(securityKey), config.GetValue<string>(ConfigConstants.Algorithm));
 
         List<Claim> claims =
         [
@@ -107,11 +108,11 @@ public static class UserEndpoints
         ];
 
         var jwtSecurityToken = new JwtSecurityToken(
-            config.GetValue<string>("Auth:Issuer"),
-            config.GetValue<string>("Auth:Audience"),
+            config.GetValue<string>(ConfigConstants.Issuer),
+            config.GetValue<string>(ConfigConstants.Audience),
             claims,
             DateTime.UtcNow,
-            DateTime.UtcNow.AddMinutes(config.GetValue<int>("Auth:TokenExpireMinutes")),
+            DateTime.UtcNow.AddMinutes(config.GetValue<int>(ConfigConstants.TokenExpirationMinutes)),
             credentials
         );
 
