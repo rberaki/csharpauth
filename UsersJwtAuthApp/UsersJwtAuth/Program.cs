@@ -6,10 +6,9 @@ using UsersJwtAuth.StartupDependency;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSwaggerServices();
 builder.Services.AddAuthServices(builder.Configuration);
 
 var app = builder.Build();
