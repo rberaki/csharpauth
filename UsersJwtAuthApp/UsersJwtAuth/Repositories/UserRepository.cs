@@ -3,49 +3,42 @@ using UsersJwtAuth.Models;
 
 namespace UsersJwtAuth.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly AppDbContext _context;
-
-    public UserRepository(AppDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<IEnumerable<User>> GetAll()
     {
-        return await _context.Users.ToListAsync();
+        return await context.Users.ToListAsync();
     }
 
     public async Task<User> GetById(int id)
     {
-        return await _context.Users.FindAsync(id);
+        return await context.Users.FindAsync(id);
     }
 
     public async Task<User> GetByUsername(string username)
     {
-        return await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+        return await context.Users.FirstOrDefaultAsync(x => x.Username == username);
     }
 
     public async Task Add(User user)
     {
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
     }
 
     public async Task Update(User user)
     {
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync();
+        context.Users.Update(user);
+        await context.SaveChangesAsync();
     }
 
     public async Task Delete(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await context.Users.FindAsync(id);
         if (user != null)
         {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            context.Users.Remove(user);
+            await context.SaveChangesAsync();
         }
     }
 }

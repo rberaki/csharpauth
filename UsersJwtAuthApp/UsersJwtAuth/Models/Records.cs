@@ -2,6 +2,4 @@
 
 public record UserLoginDto(string Username, string Password);
 
-public record UserDto (int Id, string Firstname, string Lastname, string Email, string Username, string Password);
-
-public record TokenDto (string AccessToken, string TokenType);
+public record UserDto (string Firstname, string Lastname, string Email, string Username, string Password);
