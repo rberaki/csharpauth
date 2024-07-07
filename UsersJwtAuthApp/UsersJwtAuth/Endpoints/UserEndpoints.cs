@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using UsersJwtAuth.Models;
 using UsersJwtAuth.Repositories;
 
@@ -23,6 +24,7 @@ public static class UserEndpoints
         app.MapDelete("/users/{id}", DeleteUser).WithTags("Users");
     }
 
+    [AllowAnonymous]
     private static async Task<IResult> GetToken(IUserRepository repo, IConfiguration config, [FromBody] UserLoginDto userLogin)
     {
         var user = await Login(repo, userLogin);
@@ -41,6 +43,7 @@ public static class UserEndpoints
         return Results.Ok(result);
     }
 
+    [AllowAnonymous]
     private static async Task<IResult> CreateUser(IUserRepository repo, [FromBody] UserDto userDto)
     {
         var user = new User
