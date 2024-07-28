@@ -2,6 +2,8 @@
 
 public static class ConfigConstants
 {
+    public const string DbConnectionString = "DefaultConnection";
+
     public const string Issuer = "Auth:Issuer";
     public const string Audience = "Auth:Audience";
     public const string SecretKey = "Auth:SecretKey";
