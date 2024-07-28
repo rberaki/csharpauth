@@ -1,15 +1,13 @@
-using Microsoft.EntityFrameworkCore;
 using UsersJwtAuth.Endpoints;
-using UsersJwtAuth.Repositories;
 using UsersJwtAuth.StartupDependency;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddSwaggerServices();
-builder.Services.AddAuthServices(builder.Configuration);
+builder.Services
+    .AddEndpointsApiExplorer()
+    .AddInfrastructureServices(builder.Configuration)
+    .AddAuthServices(builder.Configuration)
+    .AddSwaggerServices();
 
 var app = builder.Build();
 

@@ -1,14 +1,25 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using UsersJwtAuth.Constants;
+using UsersJwtAuth.Repositories;
 
 namespace UsersJwtAuth.StartupDependency;
 
-public static class DiExtensions
+public static class DependencyInjectionExtensions
 {
-    public static void AddAuthServices(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
+    {
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddDbContext<AppDbContext>(options => 
+            options.UseSqlite(config.GetConnectionString(ConfigConstants.DbConnectionString)));
+
+        return services;
+    }
+
+    public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddAuthorization(options =>
         {
@@ -22,6 +33,7 @@ public static class DiExtensions
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
+                LifetimeValidator = CustomLifetimeValidator,
                 ValidIssuer = config.GetValue<string>(ConfigConstants.Issuer),
                 ValidAudience = config.GetValue<string>(ConfigConstants.Audience),
                 IssuerSigningKey =
@@ -29,9 +41,11 @@ public static class DiExtensions
                         Encoding.UTF8.GetBytes(config.GetValue<string>(ConfigConstants.SecretKey)))
             };
         });
+
+        return services;
     }
 
-    public static void AddSwaggerServices(this IServiceCollection services)
+    public static IServiceCollection AddSwaggerServices(this IServiceCollection services)
     {
         var securityScheme = new OpenApiSecurityScheme
         {
@@ -63,5 +77,16 @@ public static class DiExtensions
             options.AddSecurityDefinition("bearerAuth", securityScheme);
             options.AddSecurityRequirement(securityRequirement);
         });
+
+        return services;
+    }
+
+    private static bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires,
+        SecurityToken tokenToValidate, TokenValidationParameters param)
+    {
+        if (expires != null)
+            return expires > DateTime.UtcNow;
+
+        return false;
     }
 }
